@@ -18,7 +18,7 @@ type Postgres struct {
 }
 
 type User struct {
-	Id       int       `json:"id"`
+	ID       int       `json:"id"`
 	Username string    `json:"username"`
 	Password string    `json:"password"`
 	Created  time.Time `json:"created"`
@@ -28,8 +28,9 @@ func (p Postgres) CreateNewUser(ctx context.Context, username string, password s
 	ctx, cancel := context.WithTimeout(ctx, time.Second*time.Duration(p.QueryTimeout))
 	defer cancel()
 
-	var userId int
+	var userID int
 
+	//nolint:execinquery
 	if err := p.Pool.QueryRowContext(ctx, `
 		INSERT INTO
 			auth(username, password, created)
@@ -41,16 +42,16 @@ func (p Postgres) CreateNewUser(ctx context.Context, username string, password s
 		username,
 		password,
 	).Scan(
-		&userId,
+		&userID,
 	); err != nil {
 		if db.IsUniqueConstraintError(err) {
-			return 0, fmt.Errorf("%s: %w: %v", username, ErrUserAlreadyExists, err)
+			return 0, fmt.Errorf("%s: %w: %s", username, ErrUserAlreadyExists, err.Error())
 		}
 
 		return 0, fmt.Errorf("query row: %w", err)
 	}
 
-	return userId, nil
+	return userID, nil
 }
 
 func (p Postgres) CheckUser(ctx context.Context, username string, password string) error {

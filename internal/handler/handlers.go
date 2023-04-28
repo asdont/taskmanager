@@ -5,7 +5,7 @@ type HTTPError struct {
 	Comment string `json:"comment,omitempty"`
 }
 
-// 401
+// 401.
 const (
 	typeAuthUsernameRequired      = "AUTH_USERNAME_REQUIRED"
 	typeAuthPasswordRequired      = "AUTH_PASSWORD_REQUIRED"
@@ -19,7 +19,7 @@ const (
 	typeParameterTooLong  = "PARAMETER_TOO_LONG"
 )
 
-// 500
+// 500.
 const (
 	typeInternalError = "INTERNAL"
 )

@@ -13,7 +13,7 @@ import (
 )
 
 type deleteTaskURI struct {
-	TaskId int `uri:"taskId" binding:"required"`
+	TaskID int `uri:"taskId" binding:"required"`
 }
 
 func V1DeleteTask(ctx context.Context, postgres model.Postgres) gin.HandlerFunc {
@@ -35,11 +35,11 @@ func V1DeleteTask(ctx context.Context, postgres model.Postgres) gin.HandlerFunc 
 			return
 		}
 
-		if err := postgres.DeleteTask(ctx, username, security.SaltPassword(password), u.TaskId); err != nil {
+		if err := postgres.DeleteTask(ctx, username, security.SaltPassword(password), u.TaskID); err != nil {
 			if errors.Is(err, model.ErrTaskNotFound) {
 				c.JSON(http.StatusBadRequest, HTTPError{
 					Error:   typeTaskNotFound,
-					Comment: strconv.Itoa(u.TaskId),
+					Comment: strconv.Itoa(u.TaskID),
 				})
 
 				return

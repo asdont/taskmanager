@@ -11,9 +11,9 @@ import (
 var errInvalidField = errors.New("invalid field")
 
 type Conf struct {
-	Server   server
-	Postgres postgres
-	Logger   logger
+	Server   server   `toml:"server"`
+	Postgres postgres `toml:"postgres"`
+	Logger   logger   `toml:"logger"`
 }
 
 type server struct {

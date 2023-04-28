@@ -72,7 +72,7 @@ func createPool(connAddress string) (*sql.DB, error) {
 				return nil, fmt.Errorf("pool: close: %w", err)
 			}
 
-			return nil, fmt.Errorf("%v: %w", err, errTempError)
+			return nil, fmt.Errorf("%s: %w", err.Error(), errTempError)
 		}
 
 		return nil, fmt.Errorf("ping: fail: %w", err)

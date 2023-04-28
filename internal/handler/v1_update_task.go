@@ -16,7 +16,7 @@ import (
 )
 
 type updateTaskURI struct {
-	TaskId int `uri:"taskId" binding:"required"`
+	TaskID int `uri:"taskId" binding:"required"`
 }
 
 type updateTaskBody struct {
@@ -62,12 +62,12 @@ func V1UpdateTask(ctx context.Context, postgres model.Postgres) gin.HandlerFunc 
 		}
 
 		if err := postgres.UpdateTask(
-			ctx, username, security.SaltPassword(password), u.TaskId, updateTaskCreateSetValues(b),
+			ctx, username, security.SaltPassword(password), u.TaskID, updateTaskCreateSetValues(b),
 		); err != nil {
 			if errors.Is(err, model.ErrTaskNotFound) {
 				c.JSON(http.StatusBadRequest, HTTPError{
 					Error:   typeTaskNotFound,
-					Comment: strconv.Itoa(u.TaskId),
+					Comment: strconv.Itoa(u.TaskID),
 				})
 
 				return

@@ -14,7 +14,7 @@ import (
 )
 
 type Task struct {
-	Id        int       `json:"id"`
+	ID        int       `json:"id"`
 	Status    bool      `json:"status"`
 	Title     string    `json:"title"`
 	Created   time.Time `json:"created"`
@@ -26,8 +26,9 @@ func (p Postgres) CreateTask(ctx context.Context, username, password, title stri
 	ctx, cancel := context.WithTimeout(ctx, time.Second*time.Duration(p.QueryTimeout))
 	defer cancel()
 
-	var taskId int
+	var taskID int
 
+	//nolint:execinquery
 	if err := p.Pool.QueryRowContext(ctx, `
 		INSERT INTO
 			task(user_id, status, title, created, updated)
@@ -41,19 +42,19 @@ func (p Postgres) CreateTask(ctx context.Context, username, password, title stri
 		false,
 		title,
 	).Scan(
-		&taskId,
+		&taskID,
 	); err != nil {
 		if db.IsNullValueError(err) {
-			return 0, fmt.Errorf("%s: %w: %v", username, ErrUserNotFound, err)
+			return 0, fmt.Errorf("%s: %w: %s", username, ErrUserNotFound, err.Error())
 		}
 
 		return 0, fmt.Errorf("query row: %w", err)
 	}
 
-	return taskId, nil
+	return taskID, nil
 }
 
-func (p Postgres) GetTask(ctx context.Context, username, password string, taskId int) (Task, error) {
+func (p Postgres) GetTask(ctx context.Context, username, password string, taskID int) (Task, error) {
 	ctx, cancel := context.WithTimeout(ctx, time.Second*time.Duration(p.QueryTimeout))
 	defer cancel()
 
@@ -76,9 +77,9 @@ func (p Postgres) GetTask(ctx context.Context, username, password string, taskId
 	`,
 		username,
 		password,
-		taskId,
+		taskID,
 	).Scan(
-		&task.Id,
+		&task.ID,
 		&task.Status,
 		&task.Title,
 		&task.Created,
@@ -86,7 +87,7 @@ func (p Postgres) GetTask(ctx context.Context, username, password string, taskId
 		&taskCompleted,
 	); err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return Task{}, fmt.Errorf("task id: %d: %w", taskId, ErrTaskNotFound)
+			return Task{}, fmt.Errorf("task id: %d: %w", taskID, ErrTaskNotFound)
 		}
 
 		return Task{}, fmt.Errorf("query row: %w", err)
@@ -134,7 +135,7 @@ func (p Postgres) GetTasks(ctx context.Context, username, password string) ([]Ta
 		)
 
 		if err := rows.Scan(
-			&task.Id,
+			&task.ID,
 			&task.Status,
 			&task.Title,
 			&task.Created,
@@ -156,7 +157,7 @@ func (p Postgres) GetTasks(ctx context.Context, username, password string) ([]Ta
 	return tasks, nil
 }
 
-func (p Postgres) UpdateTask(ctx context.Context, username, password string, taskId int, setValues []string) error {
+func (p Postgres) UpdateTask(ctx context.Context, username, password string, taskID int, setValues []string) error {
 	ctx, cancel := context.WithTimeout(ctx, time.Second*time.Duration(p.QueryTimeout))
 	defer cancel()
 
@@ -172,7 +173,7 @@ func (p Postgres) UpdateTask(ctx context.Context, username, password string, tas
 		strings.Join(setValues, ","),
 		pq.QuoteLiteral(username),
 		pq.QuoteLiteral(password),
-		taskId,
+		taskID,
 	))
 	if err != nil {
 		return fmt.Errorf("exec: %w", err)
@@ -184,13 +185,13 @@ func (p Postgres) UpdateTask(ctx context.Context, username, password string, tas
 	}
 
 	if rowsAffected != 1 {
-		return fmt.Errorf("task id %d: rows affected %d: %w", taskId, rowsAffected, ErrTaskNotFound)
+		return fmt.Errorf("task id %d: rows affected %d: %w", taskID, rowsAffected, ErrTaskNotFound)
 	}
 
 	return nil
 }
 
-func (p Postgres) DeleteTask(ctx context.Context, username, password string, taskId int) error {
+func (p Postgres) DeleteTask(ctx context.Context, username, password string, taskID int) error {
 	ctx, cancel := context.WithTimeout(ctx, time.Second*time.Duration(p.QueryTimeout))
 	defer cancel()
 
@@ -203,7 +204,7 @@ func (p Postgres) DeleteTask(ctx context.Context, username, password string, tas
 	`,
 		username,
 		password,
-		taskId,
+		taskID,
 	)
 	if err != nil {
 		return fmt.Errorf("exec: %w", err)
@@ -215,7 +216,7 @@ func (p Postgres) DeleteTask(ctx context.Context, username, password string, tas
 	}
 
 	if rowsAffected != 1 {
-		return fmt.Errorf("task id %d: rows affected %d: %w", taskId, rowsAffected, ErrTaskNotFound)
+		return fmt.Errorf("task id %d: rows affected %d: %w", taskID, rowsAffected, ErrTaskNotFound)
 	}
 
 	return nil

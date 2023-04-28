@@ -30,7 +30,7 @@ func (conf Conf) CreateLoggerWithRotate(fileName string) *logrus.Logger {
 	logger := &logrus.Logger{
 		Out:   lumberjackLogger,
 		Level: conf.Level,
-		Formatter: &logrus.TextFormatter{
+		Formatter: &logrus.JSONFormatter{
 			TimestampFormat: conf.TimeFormat,
 		},
 	}

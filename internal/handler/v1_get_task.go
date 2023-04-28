@@ -13,7 +13,7 @@ import (
 )
 
 type getTaskURI struct {
-	TaskId int `uri:"taskId" binding:"required"`
+	TaskID int `uri:"taskId" binding:"required"`
 }
 
 func V1GetTask(ctx context.Context, postgres model.Postgres) gin.HandlerFunc {
@@ -35,12 +35,12 @@ func V1GetTask(ctx context.Context, postgres model.Postgres) gin.HandlerFunc {
 			return
 		}
 
-		task, err := postgres.GetTask(ctx, username, security.SaltPassword(password), u.TaskId)
+		task, err := postgres.GetTask(ctx, username, security.SaltPassword(password), u.TaskID)
 		if err != nil {
 			if errors.Is(err, model.ErrTaskNotFound) {
 				c.JSON(http.StatusBadRequest, HTTPError{
 					Error:   typeTaskNotFound,
-					Comment: strconv.Itoa(u.TaskId),
+					Comment: strconv.Itoa(u.TaskID),
 				})
 
 				return

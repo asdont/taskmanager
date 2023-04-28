@@ -1,0 +1,56 @@
+linters:
+  enable-all: true
+  disable:
+    - contextcheck
+    - deadcode # deprecated
+    - exhaustivestruct
+    - exhaustruct
+    - gci
+    - gofumpt # goland conflict
+    - golint # archived
+    - ifshort # deprecated
+    - interfacer # archived
+    - maligned # archived
+    - nosnakecase # deprecated
+    - scopelint # archived
+    - structcheck # deprecated
+    - varcheck # deprecated
+run:
+  skip-files:
+    - "_test\\.go$"
+
+linters-settings:
+  godot:
+    exclude:
+      - "@.*"
+
+  gomnd:
+    settings:
+      mnd:
+        ignored-functions:
+          - 'os.OpenFile.*'
+          - 'os.WriteFile.*'
+          - 'strconv.*'
+
+  funlen:
+    lines: -1
+    statements: 50
+
+  ireturn:
+    allow:
+      - anon
+      - error
+      - empty
+      - stdlib
+      - "(or|er)$"
+
+  varnamelen:
+    min-name-length: 1
+    ignore-decls:
+      - c *gin.Context
+      - r *http.Request
+      - w http.ResponseWriter
+
+  wrapcheck:
+    ignoreSigRegexps:
+      - ResponseWriter

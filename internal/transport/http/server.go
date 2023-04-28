@@ -3,7 +3,6 @@ package http
 import (
 	"context"
 	"fmt"
-	"io"
 	"net/http"
 	"time"
 
@@ -25,22 +24,14 @@ type Conf struct {
 }
 
 func (conf Conf) RunHTTPServer(ctx context.Context, postgres model.Postgres, logger *logrus.Logger) error {
-	loggerWriter := logger.Writer()
-
-	defer func(loggerWriter *io.PipeWriter) {
-		if err := loggerWriter.Close(); err != nil {
-			logger.Errorf("logger writer: %v", err)
-		}
-	}(loggerWriter)
-
+	gin.DisableConsoleColor()
 	gin.SetMode(conf.Mode)
 
 	router := gin.New()
 
 	router.Use(
 		gin.Recovery(),
-		gin.LoggerWithWriter(loggerWriter),
-		errorsHandler(logger),
+		requestLogger(logger),
 	)
 
 	conf.setRouters(ctx, postgres, router)
@@ -58,6 +49,7 @@ func (conf Conf) RunHTTPServer(ctx context.Context, postgres model.Postgres, log
 	if err := server.ListenAndServe(); err != nil {
 		return fmt.Errorf("listen and serve: %w", err)
 	}
+
 	return nil
 }
 

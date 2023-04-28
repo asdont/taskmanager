@@ -57,7 +57,7 @@ func main() {
 		ManagementUsername: conf.Server.ManagementUsername,
 		ManagementPassword: conf.Server.ManagementPassword,
 		Mode:               gin.ReleaseMode,
-		MaxHeaderBytes:     1 << 16,
+		MaxHeaderBytes:     1 << 16, //nolint:gomnd
 		ReadTimeoutSecond:  conf.Server.ReadTimeoutSeconds,
 		WriteTimeoutSecond: conf.Server.WriteTimeoutSeconds,
 	}

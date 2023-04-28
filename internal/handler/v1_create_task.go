@@ -20,7 +20,7 @@ type createTaskBody struct {
 }
 
 type createTaskResult struct {
-	TaskId int `json:"taskId"`
+	TaskID int `json:"taskId"`
 }
 
 func V1CreateTask(ctx context.Context, postgres model.Postgres) gin.HandlerFunc {
@@ -51,7 +51,7 @@ func V1CreateTask(ctx context.Context, postgres model.Postgres) gin.HandlerFunc 
 			return
 		}
 
-		taskId, err := postgres.CreateTask(ctx, username, security.SaltPassword(password), b.Title)
+		taskID, err := postgres.CreateTask(ctx, username, security.SaltPassword(password), b.Title)
 		if err != nil {
 			if errors.Is(err, model.ErrUserNotFound) {
 				c.AbortWithStatus(http.StatusUnauthorized)
@@ -68,7 +68,7 @@ func V1CreateTask(ctx context.Context, postgres model.Postgres) gin.HandlerFunc 
 		}
 
 		c.JSON(http.StatusCreated, createTaskResult{
-			TaskId: taskId,
+			TaskID: taskID,
 		})
 	}
 }

@@ -28,7 +28,7 @@ type createUserBody struct {
 }
 
 type createUserResult struct {
-	UserId int `json:"userId"`
+	UserID int `json:"userId"`
 }
 
 func V1CreateUser(ctx context.Context, postgres model.Postgres) gin.HandlerFunc {
@@ -50,9 +50,8 @@ func V1CreateUser(ctx context.Context, postgres model.Postgres) gin.HandlerFunc 
 			return
 		}
 
-		userId, err := postgres.CreateNewUser(ctx, b.Username, security.SaltPassword(b.Password))
+		userID, err := postgres.CreateNewUser(ctx, b.Username, security.SaltPassword(b.Password))
 		if err != nil {
-			fmt.Println(err)
 			if errors.Is(err, model.ErrUserAlreadyExists) {
 				c.JSON(http.StatusBadRequest, HTTPError{
 					Error:   typeAuthUsernameAlreadyExists,
@@ -71,7 +70,7 @@ func V1CreateUser(ctx context.Context, postgres model.Postgres) gin.HandlerFunc 
 		}
 
 		c.JSON(http.StatusCreated, createUserResult{
-			UserId: userId,
+			UserID: userID,
 		})
 	}
 }
