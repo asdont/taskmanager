@@ -23,6 +23,18 @@ type createTaskResult struct {
 	TaskID int `json:"taskId"`
 }
 
+// V1CreateTask
+//
+// @Summary create new task
+// @Tags tasks
+// @Accept json
+// @Produce json
+// @Param data body createTaskBody true "title - max 200"
+// @Success 201 {object} createTaskResult "taskId"
+// @Failure 400 {object} HTTPError "error text"
+// @Failure 401
+// @Failure 500 {object} HTTPError "error text"
+// @Router /v1/task [post]
 func V1CreateTask(ctx context.Context, postgres model.Postgres) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var b createTaskBody

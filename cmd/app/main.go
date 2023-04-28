@@ -14,8 +14,22 @@ import (
 	"taskmanager/internal/transport/http"
 
 	_ "github.com/lib/pq"
+
+	_ "taskmanager/docs"
 )
 
+// @title API Task Manager
+// @version 1.0
+
+// @contact.name Example
+// @contact.url https://example.com/
+// @contact.email example@mail.com
+
+// @host 127.0.0.1:45222
+// @schemes http
+// @BasePath /api
+
+// @securityDefinitions.basic BasicAuth
 func main() {
 	conf, err := config.Get("configs/conf.toml")
 	if err != nil {

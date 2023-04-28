@@ -1,0 +1,104 @@
+{
+    "schemes": [
+        "http"
+    ],
+    "swagger": "2.0",
+    "info": {
+        "title": "API Task Manager",
+        "contact": {
+            "name": "Example",
+            "url": "https://example.com/",
+            "email": "example@mail.com"
+        },
+        "version": "1.0"
+    },
+    "host": "127.0.0.1:45222",
+    "basePath": "/api",
+    "paths": {
+        "/v1/account/create": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "tasks"
+                ],
+                "summary": "create new task",
+                "parameters": [
+                    {
+                        "description": "title - max 200",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/handler.createTaskBody"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "taskId",
+                        "schema": {
+                            "$ref": "#/definitions/handler.createTaskResult"
+                        }
+                    },
+                    "400": {
+                        "description": "error text",
+                        "schema": {
+                            "$ref": "#/definitions/handler.HTTPError"
+                        }
+                    },
+                    "401": {
+                        "description": ""
+                    },
+                    "500": {
+                        "description": "error text",
+                        "schema": {
+                            "$ref": "#/definitions/handler.HTTPError"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "handler.HTTPError": {
+            "type": "object",
+            "properties": {
+                "comment": {
+                    "type": "string"
+                },
+                "error": {
+                    "type": "string"
+                }
+            }
+        },
+        "handler.createTaskBody": {
+            "type": "object",
+            "required": [
+                "title"
+            ],
+            "properties": {
+                "title": {
+                    "type": "string"
+                }
+            }
+        },
+        "handler.createTaskResult": {
+            "type": "object",
+            "properties": {
+                "taskId": {
+                    "type": "integer"
+                }
+            }
+        }
+    },
+    "securityDefinitions": {
+        "BasicAuth": {
+            "type": "basic"
+        }
+    }
+}

@@ -1,0 +1,67 @@
+basePath: /api
+definitions:
+  handler.HTTPError:
+    properties:
+      comment:
+        type: string
+      error:
+        type: string
+    type: object
+  handler.createTaskBody:
+    properties:
+      title:
+        type: string
+    required:
+    - title
+    type: object
+  handler.createTaskResult:
+    properties:
+      taskId:
+        type: integer
+    type: object
+host: 127.0.0.1:45222
+info:
+  contact:
+    email: example@mail.com
+    name: Example
+    url: https://example.com/
+  title: API Task Manager
+  version: "1.0"
+paths:
+  /v1/account/create:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: title - max 200
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/handler.createTaskBody'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: taskId
+          schema:
+            $ref: '#/definitions/handler.createTaskResult'
+        "400":
+          description: error text
+          schema:
+            $ref: '#/definitions/handler.HTTPError'
+        "401":
+          description: ""
+        "500":
+          description: error text
+          schema:
+            $ref: '#/definitions/handler.HTTPError'
+      summary: create new task
+      tags:
+      - tasks
+schemes:
+- http
+securityDefinitions:
+  BasicAuth:
+    type: basic
+swagger: "2.0"

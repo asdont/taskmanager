@@ -8,6 +8,8 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
+	swagFiles "github.com/swaggo/files"
+	swag "github.com/swaggo/gin-swagger"
 
 	"taskmanager/internal/handler"
 	"taskmanager/internal/model"
@@ -54,6 +56,8 @@ func (conf Conf) RunHTTPServer(ctx context.Context, postgres model.Postgres, log
 }
 
 func (conf Conf) setRouters(ctx context.Context, postgres model.Postgres, router *gin.Engine) {
+	router.GET("/doc/*any", swag.WrapHandler(swagFiles.Handler))
+
 	management := router.Group(
 		"/management/v1", gin.BasicAuth(gin.Accounts{
 			conf.ManagementUsername: conf.ManagementPassword},
