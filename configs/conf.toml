@@ -1,0 +1,27 @@
+# ----------------------------- SERVER ----------------------------- #
+
+[server]
+ManagementUsername = "admin"
+ManagementPassword = "admin"
+Port = "45222"
+
+ReadTimeoutSeconds = 30
+WriteTimeoutSeconds = 30
+
+# ---------------------------- POSTGRES ---------------------------- #`
+
+[postgres]
+ConnAddress = "postgres://task_manager:task_manager@localhost/task_manager?sslmode=disable"
+
+MaxOpenConns = 5
+MaxIdleConns = 2
+
+QueryTimeout = 60
+
+# ---------------------------- LOOGERS  ---------------------------- #`
+
+[logger]
+FileName = "logs/app.log"
+MaxSizeMb = 50
+MaxBackups = 3
+MaxAgeDays = 180
