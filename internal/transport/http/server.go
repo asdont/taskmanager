@@ -3,7 +3,9 @@ package http
 import (
 	"context"
 	"fmt"
+	"io"
 	"net/http"
+	"os"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -17,8 +19,8 @@ import (
 
 type Conf struct {
 	Port               string
-	ManagementUsername string
-	ManagementPassword string
+	ManageUsername     string
+	ManagePassword     string
 	Mode               string
 	MaxHeaderBytes     int
 	ReadTimeoutSecond  int
@@ -26,14 +28,16 @@ type Conf struct {
 }
 
 func (conf Conf) RunHTTPServer(ctx context.Context, postgres model.Postgres, logger *logrus.Logger) error {
-	gin.DisableConsoleColor()
+	//gin.DisableConsoleColor()
 	gin.SetMode(conf.Mode)
+	gin.DefaultWriter = io.MultiWriter(os.Stdout)
 
 	router := gin.New()
 
 	router.Use(
 		gin.Recovery(),
 		requestLogger(logger),
+		gin.LoggerWithWriter(gin.DefaultWriter),
 	)
 
 	conf.setRouters(ctx, postgres, router)
@@ -58,23 +62,26 @@ func (conf Conf) RunHTTPServer(ctx context.Context, postgres model.Postgres, log
 func (conf Conf) setRouters(ctx context.Context, postgres model.Postgres, router *gin.Engine) {
 	router.GET("/doc/*any", swag.WrapHandler(swagFiles.Handler))
 
-	management := router.Group(
-		"/management/v1", gin.BasicAuth(gin.Accounts{
-			conf.ManagementUsername: conf.ManagementPassword},
-		),
-	)
+	api := router.Group("/api")
+	v1 := api.Group("/v1")
+
+	manage := v1.Group("/manage", gin.BasicAuth(gin.Accounts{conf.ManageUsername: conf.ManagePassword}))
 	{
-		management.POST("/user", handler.V1CreateUser(ctx, postgres))
+		manage.POST("/user", handler.V1CreateUser(ctx, postgres))
+		manage.DELETE("/user/:userId", handler.V1DeleteUser(ctx, postgres))
 	}
 
-	v1 := router.Group("/api/v1")
+	task := v1.Group("/task")
 	{
-		v1.POST("/task", handler.V1CreateTask(ctx, postgres))
-		v1.GET("/task/:taskId", handler.V1GetTask(ctx, postgres))
-		v1.PUT("/task/:taskId", handler.V1UpdateTask(ctx, postgres))
-		v1.DELETE("/task/:taskId", handler.V1DeleteTask(ctx, postgres))
+		task.POST("/", handler.V1CreateTask(ctx, postgres))
+		task.GET("/:taskId", handler.V1GetTask(ctx, postgres))
+		task.PUT("/:taskId", handler.V1UpdateTask(ctx, postgres))
+		task.DELETE("/:taskId", handler.V1DeleteTask(ctx, postgres))
+	}
 
-		v1.GET("/tasks", handler.V1GetTasks(ctx, postgres))
-		v1.DELETE("/tasks", handler.V1DeleteTasks(ctx, postgres))
+	tasks := v1.Group("/tasks")
+	{
+		tasks.GET("/", handler.V1GetTasks(ctx, postgres))
+		tasks.DELETE("/", handler.V1DeleteTasks(ctx, postgres))
 	}
 }

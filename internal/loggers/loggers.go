@@ -1,9 +1,6 @@
 package loggers
 
 import (
-	"io"
-	"os"
-
 	"github.com/sirupsen/logrus"
 	"gopkg.in/natefinch/lumberjack.v2"
 )
@@ -36,7 +33,7 @@ func (conf Conf) CreateLoggerWithRotate(fileName string) *logrus.Logger {
 	}
 
 	if conf.MultiWriter {
-		logger.Out = io.MultiWriter(os.Stdout, lumberjackLogger)
+		logger.Out = lumberjackLogger
 	}
 
 	return logger

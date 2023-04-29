@@ -1,8 +1,8 @@
 # ----------------------------- SERVER ----------------------------- #
 
 [server]
-ManagementUsername = "admin"
-ManagementPassword = "admin"
+ManageUsername = "admin"
+ManagePassword = "admin"
 Port = "45222"
 
 ReadTimeoutSeconds = 30

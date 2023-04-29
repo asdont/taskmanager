@@ -10,11 +10,21 @@ import (
 	"taskmanager/internal/security"
 )
 
+// V1GetTasks
+//
+// @Summary get tasks
+// @Tags tasks
+// @Accept json
+// @Produce json
+// @Success 200 {object} []model.Task
+// @Failure 401 {object} nil
+// @Failure 500 {object} HTTPError "error type, comment"
+// @Router /v1/tasks [get]
 func V1GetTasks(ctx context.Context, postgres model.Postgres) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		username, password, ok := c.Request.BasicAuth()
 		if !ok {
-			c.AbortWithStatus(http.StatusUnauthorized)
+			abortWithStatusUnauthorized(c)
 
 			return
 		}
@@ -22,13 +32,14 @@ func V1GetTasks(ctx context.Context, postgres model.Postgres) gin.HandlerFunc {
 		tasks, err := postgres.GetTasks(ctx, username, security.SaltPassword(password))
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, HTTPError{
-				Error:   typeInternalError,
+				Type:    typeInternalError,
 				Comment: "get tasks",
+				Error:   err.Error(),
 			})
 
 			return
 		}
 
-		c.JSON(http.StatusCreated, tasks)
+		c.JSON(http.StatusOK, tasks)
 	}
 }

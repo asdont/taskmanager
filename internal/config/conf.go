@@ -17,8 +17,8 @@ type Conf struct {
 }
 
 type server struct {
-	ManagementUsername  string `toml:"ManagementUsername" validate:"min=5"`
-	ManagementPassword  string `toml:"ManagementPassword" validate:"min=5"`
+	ManageUsername      string `toml:"ManageUsername" validate:"min=5"`
+	ManagePassword      string `toml:"ManagePassword" validate:"min=5"`
 	Port                string `toml:"Port" validate:"numeric"`
 	ReadTimeoutSeconds  int    `toml:"ReadTimeoutSeconds" validate:"gte=1,lte=300"`
 	WriteTimeoutSeconds int    `toml:"WriteTimeoutSeconds" validate:"gte=1,lte=300"`

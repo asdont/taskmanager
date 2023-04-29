@@ -23,21 +23,34 @@ const (
 )
 
 type createUserBody struct {
-	Username string `json:"username" binding:"required"`
-	Password string `json:"password" binding:"required"`
+	Username string `json:"username" binding:"required" example:"newuser"`
+	Password string `json:"password" binding:"required" example:"newuser"`
 }
 
 type createUserResult struct {
 	UserID int `json:"userId"`
 }
 
+// V1CreateUser here authorization is checked at the server level.
+//
+// @Summary create new user(manage auth - admin:admin)
+// @Tags management
+// @Accept json
+// @Produce json
+// @Param data body createUserBody true "manage auth - admin:admin; username(3-20); password(5-20)"
+// @Success 201 {object} createUserResult "userId"
+// @Failure 400 {object} HTTPError "error type, comment"
+// @Failure 401 {object} nil
+// @Failure 500 {object} HTTPError "error type, comment"
+// @Router /v1/manage/user [post]
 func V1CreateUser(ctx context.Context, postgres model.Postgres) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var b createUserBody
 		if err := c.ShouldBindJSON(&b); err != nil {
 			c.JSON(http.StatusBadRequest, HTTPError{
-				Error:   typeParametersRequired,
+				Type:    typeParametersRequired,
 				Comment: "username and password required",
+				Error:   err.Error(),
 			})
 
 			return
@@ -54,16 +67,18 @@ func V1CreateUser(ctx context.Context, postgres model.Postgres) gin.HandlerFunc 
 		if err != nil {
 			if errors.Is(err, model.ErrUserAlreadyExists) {
 				c.JSON(http.StatusBadRequest, HTTPError{
-					Error:   typeAuthUsernameAlreadyExists,
+					Type:    typeUsernameAlreadyExists,
 					Comment: b.Username,
+					Error:   err.Error(),
 				})
 
 				return
 			}
 
 			c.JSON(http.StatusInternalServerError, HTTPError{
-				Error:   typeInternalError,
+				Type:    typeInternalError,
 				Comment: "create new user",
+				Error:   err.Error(),
 			})
 
 			return
@@ -102,15 +117,15 @@ func checkUsername(username string) *HTTPError {
 		}
 
 		return &HTTPError{
-			Error:   typeAuthUsernameRequired,
+			Type:    typeUsernameRequired,
 			Comment: "only letters and numbers required",
 		}
 	}
 
 	if count < minLengthUsername || count > maxLengthUsername {
 		return &HTTPError{
-			Comment: typeAuthUsernameRequired,
-			Error:   fmt.Sprintf("min %d, max %d", minLengthUsername, maxLengthUsername),
+			Comment: typeUsernameRequired,
+			Type:    fmt.Sprintf("min %d, max %d", minLengthUsername, maxLengthUsername),
 		}
 	}
 
@@ -130,14 +145,14 @@ func checkPassword(password string) *HTTPError {
 		}
 
 		return &HTTPError{
-			Error:   typeAuthPasswordRequired,
+			Type:    typePasswordRequired,
 			Comment: fmt.Sprintf("only letters, numbers or %s required", allowedSpecialChars),
 		}
 	}
 
 	if count < minLengthPassword || count > maxLengthPassword {
 		return &HTTPError{
-			Error:   typeAuthPasswordRequired,
+			Type:    typePasswordRequired,
 			Comment: fmt.Sprintf("min %d, max %d", minLengthPassword, maxLengthPassword),
 		}
 	}

@@ -16,7 +16,7 @@ import (
 const maxLengthTaskTitle = 200
 
 type createTaskBody struct {
-	Title string `json:"title" binding:"required"`
+	Title string `json:"title" binding:"required" example:"some title"`
 }
 
 type createTaskResult struct {
@@ -26,37 +26,38 @@ type createTaskResult struct {
 // V1CreateTask
 //
 // @Summary create new task
-// @Tags tasks
+// @Tags task
 // @Accept json
 // @Produce json
 // @Param data body createTaskBody true "title - max 200"
 // @Success 201 {object} createTaskResult "taskId"
-// @Failure 400 {object} HTTPError "error text"
-// @Failure 401
-// @Failure 500 {object} HTTPError "error text"
+// @Failure 400 {object} HTTPError "error type, comment"
+// @Failure 401 {object} nil
+// @Failure 500 {object} HTTPError "error type, comment"
 // @Router /v1/task [post]
 func V1CreateTask(ctx context.Context, postgres model.Postgres) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		var b createTaskBody
-		if err := c.ShouldBindJSON(&b); err != nil {
-			c.JSON(http.StatusBadRequest, HTTPError{
-				Error:   typeParameterRequired,
-				Comment: "title",
-			})
+		username, password, ok := c.Request.BasicAuth()
+		if !ok {
+			abortWithStatusUnauthorized(c)
 
 			return
 		}
 
-		username, password, ok := c.Request.BasicAuth()
-		if !ok {
-			c.AbortWithStatus(http.StatusUnauthorized)
+		var b createTaskBody
+		if err := c.ShouldBindJSON(&b); err != nil {
+			c.JSON(http.StatusBadRequest, HTTPError{
+				Type:    typeParameterRequired,
+				Comment: "title",
+				Error:   err.Error(),
+			})
 
 			return
 		}
 
 		if utf8.RuneCountInString(b.Title) > maxLengthTaskTitle {
 			c.JSON(http.StatusBadRequest, HTTPError{
-				Error:   typeParameterTooLong,
+				Type:    typeParameterTooLong,
 				Comment: fmt.Sprintf("max %d", maxLengthTaskTitle),
 			})
 
@@ -66,14 +67,15 @@ func V1CreateTask(ctx context.Context, postgres model.Postgres) gin.HandlerFunc 
 		taskID, err := postgres.CreateTask(ctx, username, security.SaltPassword(password), b.Title)
 		if err != nil {
 			if errors.Is(err, model.ErrUserNotFound) {
-				c.AbortWithStatus(http.StatusUnauthorized)
+				c.AbortWithStatus(http.StatusForbidden)
 
 				return
 			}
 
 			c.JSON(http.StatusInternalServerError, HTTPError{
-				Error:   typeInternalError,
+				Type:    typeInternalError,
 				Comment: "create task",
+				Error:   err.Error(),
 			})
 
 			return

@@ -87,7 +87,7 @@ func (p Postgres) GetTask(ctx context.Context, username, password string, taskID
 		&taskCompleted,
 	); err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return Task{}, fmt.Errorf("task id: %d: %w", taskID, ErrTaskNotFound)
+			return Task{}, fmt.Errorf("taskId: %d: %w", taskID, ErrTaskNotFound)
 		}
 
 		return Task{}, fmt.Errorf("query row: %w", err)
@@ -185,7 +185,7 @@ func (p Postgres) UpdateTask(ctx context.Context, username, password string, tas
 	}
 
 	if rowsAffected != 1 {
-		return fmt.Errorf("task id %d: rows affected %d: %w", taskID, rowsAffected, ErrTaskNotFound)
+		return fmt.Errorf("taskId %d: rows affected %d: %w", taskID, rowsAffected, ErrTaskNotFound)
 	}
 
 	return nil
@@ -216,7 +216,7 @@ func (p Postgres) DeleteTask(ctx context.Context, username, password string, tas
 	}
 
 	if rowsAffected != 1 {
-		return fmt.Errorf("task id %d: rows affected %d: %w", taskID, rowsAffected, ErrTaskNotFound)
+		return fmt.Errorf("taskId %d: rows affected %d: %w", taskID, rowsAffected, ErrTaskNotFound)
 	}
 
 	return nil

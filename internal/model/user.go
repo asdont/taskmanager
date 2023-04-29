@@ -54,25 +54,29 @@ func (p Postgres) CreateNewUser(ctx context.Context, username string, password s
 	return userID, nil
 }
 
-func (p Postgres) CheckUser(ctx context.Context, username string, password string) error {
+func (p Postgres) DeleteUser(ctx context.Context, userID int) error {
 	ctx, cancel := context.WithTimeout(ctx, time.Second*time.Duration(p.QueryTimeout))
 	defer cancel()
 
-	var id int
-
-	if err := p.Pool.QueryRowContext(ctx, `
-		SELECT
-		    user_id
-		FROM
+	res, err := p.Pool.ExecContext(ctx, `
+		DELETE FROM
 		    auth
 		WHERE
-		    username = $1 AND
-		    password = $2
+		    user_id = $1
 	`,
-		username,
-		password,
-	).Scan(&id); err != nil {
-		return fmt.Errorf("query row: %w", err)
+		userID,
+	)
+	if err != nil {
+		return fmt.Errorf("exec: %w", err)
+	}
+
+	rowsAffected, err := res.RowsAffected()
+	if err != nil {
+		return fmt.Errorf("rows affected: %w", err)
+	}
+
+	if rowsAffected != 1 {
+		return fmt.Errorf("userID %d: rows affected %d: %w", userID, rowsAffected, ErrUserNotFound)
 	}
 
 	return nil

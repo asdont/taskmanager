@@ -68,8 +68,8 @@ func main() {
 
 	serverConf := http.Conf{
 		Port:               conf.Server.Port,
-		ManagementUsername: conf.Server.ManagementUsername,
-		ManagementPassword: conf.Server.ManagementPassword,
+		ManageUsername:     conf.Server.ManageUsername,
+		ManagePassword:     conf.Server.ManagePassword,
 		Mode:               gin.ReleaseMode,
 		MaxHeaderBytes:     1 << 16, //nolint:gomnd
 		ReadTimeoutSecond:  conf.Server.ReadTimeoutSeconds,
