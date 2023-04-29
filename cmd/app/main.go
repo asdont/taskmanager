@@ -3,6 +3,9 @@ package main
 import (
 	"context"
 	"log"
+	"os"
+	"os/signal"
+	"syscall"
 
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
@@ -49,7 +52,7 @@ func main() {
 	logger := loggerConf.CreateLoggerWithRotate("logs/app.log")
 
 	postgresConf := db.Conf{
-		EnvDockerConn: "DB_CONN",
+		DockerEnvConn: "DB_CONN",
 		ConnAddress:   conf.Postgres.ConnAddress,
 		MaxOpenConns:  conf.Postgres.MaxOpenConns,
 		MaxIdleConns:  conf.Postgres.MaxIdleConns,
@@ -74,10 +77,24 @@ func main() {
 		MaxHeaderBytes:     1 << 16, //nolint:gomnd
 		ReadTimeoutSecond:  conf.Server.ReadTimeoutSeconds,
 		WriteTimeoutSecond: conf.Server.WriteTimeoutSeconds,
+		MaxShutdownTime:    conf.Server.MaxShutdownTime,
+		CORS: http.CORS{
+			AllowHeaders: conf.Server.CORSAllowHeaders,
+			AllowMethods: conf.Server.CORSAllowMethods,
+			AllowOrigins: conf.Server.CORSAllowOrigins,
+		},
 	}
 
 	ctx, cancel := context.WithCancel(context.Background())
-	defer cancel()
+
+	go func() {
+		sigChan := make(chan os.Signal, 1)
+		signal.Notify(sigChan, syscall.SIGHUP, syscall.SIGINT, syscall.SIGQUIT, syscall.SIGTERM)
+
+		<-sigChan
+
+		cancel()
+	}()
 
 	if err := serverConf.RunHTTPServer(ctx, postgres, logger); err != nil {
 		logger.Fatalf("run http server: %v", err)

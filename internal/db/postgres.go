@@ -25,7 +25,7 @@ var (
 )
 
 type Conf struct {
-	EnvDockerConn string
+	DockerEnvConn string
 	ConnAddress   string
 	MaxOpenConns  int
 	MaxIdleConns  int

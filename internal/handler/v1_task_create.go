@@ -72,6 +72,16 @@ func V1CreateTask(ctx context.Context, postgres model.Postgres) gin.HandlerFunc 
 				return
 			}
 
+			if errors.Is(err, model.ErrTaskAlreadyExists) {
+				c.JSON(http.StatusBadRequest, HTTPError{
+					Type:    typeTaskAlreadyExists,
+					Comment: "duplicate task",
+					Error:   err.Error(),
+				})
+
+				return
+			}
+
 			c.JSON(http.StatusInternalServerError, HTTPError{
 				Type:    typeInternalError,
 				Comment: "create task",

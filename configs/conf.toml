@@ -8,6 +8,12 @@ Port = "45222"
 ReadTimeoutSeconds = 30
 WriteTimeoutSeconds = 30
 
+MaxShutdownTime = 5 # seconds
+
+CORSAllowHeaders = ["Accept", "Authorization", "Content-Type", "Origin", "X-Requested-With"]
+CORSAllowMethods = ["GET", "POST", "PUT", "DELETE"]
+CORSAllowOrigins = ["http://127.0.0.1:45222", "http://localhost:45222"]
+
 # ---------------------------- POSTGRES ---------------------------- #`
 
 [postgres]

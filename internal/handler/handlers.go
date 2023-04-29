@@ -18,6 +18,7 @@ const (
 	typeParameterRequired     = "PARAMETER_REQUIRED"
 	typeParametersRequired    = "PARAMETERS_REQUIRED"
 	typePasswordRequired      = "PASSWORD_REQUIRED"
+	typeTaskAlreadyExists     = "TASK_ALREADY_EXISTS"
 	typeTaskNotFound          = "TASK_NOT_FOUND"
 	typeUsernameAlreadyExists = "USERNAME_ALREADY_EXISTS"
 	typeUsernameRequired      = "USERNAME_REQUIRED"

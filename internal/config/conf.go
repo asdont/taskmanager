@@ -17,11 +17,15 @@ type Conf struct {
 }
 
 type server struct {
-	ManageUsername      string `toml:"ManageUsername" validate:"min=5"`
-	ManagePassword      string `toml:"ManagePassword" validate:"min=5"`
-	Port                string `toml:"Port" validate:"numeric"`
-	ReadTimeoutSeconds  int    `toml:"ReadTimeoutSeconds" validate:"gte=1,lte=300"`
-	WriteTimeoutSeconds int    `toml:"WriteTimeoutSeconds" validate:"gte=1,lte=300"`
+	ManageUsername      string   `toml:"ManageUsername" validate:"min=5"`
+	ManagePassword      string   `toml:"ManagePassword" validate:"min=5"`
+	Port                string   `toml:"Port" validate:"numeric"`
+	ReadTimeoutSeconds  int      `toml:"ReadTimeoutSeconds" validate:"gte=1,lte=300"`
+	WriteTimeoutSeconds int      `toml:"WriteTimeoutSeconds" validate:"gte=1,lte=300"`
+	MaxShutdownTime     int      `toml:"MaxShutdownTime" validate:"gte=1,lte=300"`
+	CORSAllowHeaders    []string `toml:"CORSAllowHeaders" validate:"min=1"`
+	CORSAllowMethods    []string `toml:"CORSAllowMethods" validate:"min=1"`
+	CORSAllowOrigins    []string `toml:"CORSAllowOrigins" validate:"min=1"`
 }
 
 type postgres struct {

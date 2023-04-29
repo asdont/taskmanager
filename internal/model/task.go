@@ -44,6 +44,10 @@ func (p Postgres) CreateTask(ctx context.Context, username, password, title stri
 	).Scan(
 		&taskID,
 	); err != nil {
+		if db.IsUniqueConstraintError(err) {
+			return 0, fmt.Errorf("%s: %w: %s", username, ErrTaskAlreadyExists, err.Error())
+		}
+
 		if db.IsNullValueError(err) {
 			return 0, fmt.Errorf("%s: %w: %s", username, ErrUserNotFound, err.Error())
 		}

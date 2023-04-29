@@ -8,6 +8,7 @@ import (
 	"os"
 	"time"
 
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
 	swagFiles "github.com/swaggo/files"
@@ -25,19 +26,33 @@ type Conf struct {
 	MaxHeaderBytes     int
 	ReadTimeoutSecond  int
 	WriteTimeoutSecond int
+	MaxShutdownTime    int
+	CORS
+}
+
+type CORS struct {
+	AllowHeaders []string
+	AllowMethods []string
+	AllowOrigins []string
 }
 
 func (conf Conf) RunHTTPServer(ctx context.Context, postgres model.Postgres, logger *logrus.Logger) error {
-	//gin.DisableConsoleColor()
+	gin.DisableConsoleColor()
 	gin.SetMode(conf.Mode)
 	gin.DefaultWriter = io.MultiWriter(os.Stdout)
+
+	confCors := cors.DefaultConfig()
+	confCors.AllowHeaders = conf.AllowHeaders
+	confCors.AllowMethods = conf.AllowMethods
+	confCors.AllowOrigins = conf.AllowOrigins
 
 	router := gin.New()
 
 	router.Use(
 		gin.Recovery(),
+		cors.New(confCors),
 		requestLogger(logger),
-		gin.LoggerWithWriter(gin.DefaultWriter),
+		gin.LoggerWithFormatter(createLoggerFormatter()),
 	)
 
 	conf.setRouters(ctx, postgres, router)
@@ -50,11 +65,21 @@ func (conf Conf) RunHTTPServer(ctx context.Context, postgres model.Postgres, log
 		MaxHeaderBytes: conf.MaxHeaderBytes,
 	}
 
-	logger.Infof("start http server: port %s", conf.Port)
+	chErr := make(chan error)
 
-	if err := server.ListenAndServe(); err != nil {
-		return fmt.Errorf("listen and serve: %w", err)
+	go func() {
+		logger.Infof("start http server: port %s", conf.Port)
+
+		if err := server.ListenAndServe(); err != nil {
+			chErr <- fmt.Errorf("listen and serve: %w", err)
+		}
+	}()
+
+	if err := conf.waitingStopSignal(ctx, server, chErr); err != nil {
+		return fmt.Errorf("waiting server to stop: %w", err)
 	}
+
+	logger.Info("stop server: ok")
 
 	return nil
 }
@@ -84,4 +109,37 @@ func (conf Conf) setRouters(ctx context.Context, postgres model.Postgres, router
 		tasks.GET("/", handler.V1GetTasks(ctx, postgres))
 		tasks.DELETE("/", handler.V1DeleteTasks(ctx, postgres))
 	}
+}
+
+func createLoggerFormatter() func(p gin.LogFormatterParams) string {
+	return func(p gin.LogFormatterParams) string {
+		return fmt.Sprintf("%s | %15s | %s | %12s | %d | %6s | %s | %s | %s\n",
+			p.TimeStamp.Format(time.DateTime),
+			p.ClientIP,
+			p.Request.Proto,
+			p.Latency,
+			p.StatusCode,
+			p.Method,
+			p.Path,
+			p.Request.UserAgent(),
+			p.ErrorMessage,
+		)
+	}
+}
+
+func (conf Conf) waitingStopSignal(ctx context.Context, server *http.Server, chErr chan error) error {
+	select {
+	case err := <-chErr:
+		return err
+
+	case <-ctx.Done():
+		ctx, cancel := context.WithTimeout(context.Background(), time.Second*time.Duration(conf.MaxShutdownTime))
+		defer cancel()
+
+		if err := server.Shutdown(ctx); err != nil {
+			return fmt.Errorf("forced stop: %w", err)
+		}
+	}
+
+	return nil
 }

@@ -16,16 +16,16 @@ type deleteUserURI struct {
 
 // V1DeleteUser here authorization is checked at the server level.
 //
-// @Summary create new user(manage auth - admin:admin)
+// @Summary delete user(manage auth - admin:admin)
 // @Tags management
 // @Accept json
 // @Produce json
-// @Param data body createUserBody true "manage auth - admin:admin; username(3-20); password(5-20)"
+// @Param userId path int true "userId" minimum(1)
 // @Success 204 {object} nil
 // @Failure 400 {object} HTTPError "error type, comment"
 // @Failure 401 {object} nil
 // @Failure 500 {object} HTTPError "error type, comment"
-// @Router /v1/manage/user [delete]
+// @Router /v1/manage/user/{userId} [delete]
 func V1DeleteUser(ctx context.Context, postgres model.Postgres) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var u deleteUserURI

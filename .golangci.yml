@@ -1,12 +1,11 @@
 linters:
   enable-all: true
   disable:
-    - contextcheck
     - deadcode # deprecated
-    - exhaustivestruct
+    - exhaustivestruct # deprecated
     - exhaustruct
     - gci
-    - gofumpt # goland conflict
+    - gofumpt # conflict
     - golint # archived
     - ifshort # deprecated
     - interfacer # archived

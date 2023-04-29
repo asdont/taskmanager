@@ -32,7 +32,7 @@ func requestLogger(logger *logrus.Logger) gin.HandlerFunc {
 
 		if c.Writer.Status() >= http.StatusBadRequest {
 			logger.Errorf(
-				"%5d | %15s | %6s | %s | %v",
+				"[SERVER] %5d | %15s | %6s | %s | %v",
 				c.Writer.Status(),
 				c.ClientIP(),
 				c.Request.Method,

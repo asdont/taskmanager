@@ -75,6 +75,50 @@ var doc = `{
                 }
             }
         },
+        "/v1/manage/user/{userId}": {
+            "delete": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "management"
+                ],
+                "summary": "delete user(manage auth - admin:admin)",
+                "parameters": [
+                    {
+                        "minimum": 1,
+                        "type": "integer",
+                        "description": "userId",
+                        "name": "userId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No Content"
+                    },
+                    "400": {
+                        "description": "error type, comment",
+                        "schema": {
+                            "$ref": "#/definitions/handler.HTTPError"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "500": {
+                        "description": "error type, comment",
+                        "schema": {
+                            "$ref": "#/definitions/handler.HTTPError"
+                        }
+                    }
+                }
+            }
+        },
         "/v1/task": {
             "post": {
                 "consumes": [
@@ -334,7 +378,7 @@ var doc = `{
                 "comment": {
                     "type": "string"
                 },
-                "error": {
+                "type": {
                     "type": "string"
                 }
             }
