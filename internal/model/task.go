@@ -14,7 +14,7 @@ import (
 )
 
 type Task struct {
-	ID        int       `json:"id"`
+	ID        int       `json:"id,omitempty"`
 	Status    bool      `json:"status"`
 	Title     string    `json:"title"`
 	Created   time.Time `json:"created"`
@@ -69,7 +69,7 @@ func (p Postgres) GetTask(ctx context.Context, username, password string, taskID
 
 	if err := p.Pool.QueryRowContext(ctx, `
 		SELECT
-		    t.task_id, t.status, t.title, t.created, t.updated, t.completed
+		    t.status, t.title, t.created, t.updated, t.completed
 		FROM
 		    task t 
 		JOIN
@@ -83,7 +83,6 @@ func (p Postgres) GetTask(ctx context.Context, username, password string, taskID
 		password,
 		taskID,
 	).Scan(
-		&task.ID,
 		&task.Status,
 		&task.Title,
 		&task.Created,

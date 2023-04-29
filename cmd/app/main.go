@@ -10,13 +10,13 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
 
+	_ "github.com/lib/pq"
+
 	"taskmanager/internal/config"
 	"taskmanager/internal/db"
 	"taskmanager/internal/loggers"
 	"taskmanager/internal/model"
-	"taskmanager/internal/transport/http"
-
-	_ "github.com/lib/pq"
+	"taskmanager/internal/transport/httpsrv"
 
 	_ "taskmanager/docs"
 )
@@ -69,7 +69,7 @@ func main() {
 		Logger:       logger,
 	}
 
-	serverConf := http.Conf{
+	serverConf := httpsrv.Conf{
 		Port:               conf.Server.Port,
 		ManageUsername:     conf.Server.ManageUsername,
 		ManagePassword:     conf.Server.ManagePassword,
@@ -78,7 +78,7 @@ func main() {
 		ReadTimeoutSecond:  conf.Server.ReadTimeoutSeconds,
 		WriteTimeoutSecond: conf.Server.WriteTimeoutSeconds,
 		MaxShutdownTime:    conf.Server.MaxShutdownTime,
-		CORS: http.CORS{
+		CORS: httpsrv.CORS{
 			AllowHeaders: conf.Server.CORSAllowHeaders,
 			AllowMethods: conf.Server.CORSAllowMethods,
 			AllowOrigins: conf.Server.CORSAllowOrigins,
