@@ -28,7 +28,6 @@ func (p Postgres) CreateTask(ctx context.Context, username, password, title stri
 
 	var taskID int
 
-	//nolint:execinquery
 	if err := p.Pool.QueryRowContext(ctx, `
 		INSERT INTO
 			task(user_id, status, title, created, updated)

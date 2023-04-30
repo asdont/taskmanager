@@ -17,7 +17,7 @@ CORSAllowOrigins = ["*"]
 # ---------------------------- POSTGRES ---------------------------- #`
 
 [postgres]
-ConnAddress = "postgres://task_manager:task_manager1@localhost/task_manager?sslmode=disable"
+ConnAddress = "postgres://task_manager:task_manager@localhost/task_manager?sslmode=disable"
 
 MaxOpenConns = 5
 MaxIdleConns = 2

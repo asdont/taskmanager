@@ -92,7 +92,7 @@ func testSimplePositiveScenarioPrepareRouter(t *testing.T) (*gin.Engine, *config
 
 	postgresPool, err := db.Conf{ConnAddress: conf.Postgres.ConnAddress}.CreatePool(logger)
 	if err != nil {
-		t.Skipf("failed to connect to the database to run this test: %v", err)
+		t.Skipf("SKIP - failed to connect to the database to run this test: %v", err)
 	}
 
 	postgres := model.Postgres{

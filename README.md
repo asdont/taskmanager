@@ -88,6 +88,9 @@ go run cmd/app/main.go
 
 ```shell
 go build -o apitm cmd/app/main.go
+```
+
+```shell
 ./apitm
 ```
 
@@ -95,5 +98,18 @@ go build -o apitm cmd/app/main.go
 
 ```shell
 docker build . -t apitm:v0.1
+```
+
+```shell
 docker run --rm --network=host apitm:v0.1
+```
+
+#### Docker-compose
+
+```shell
+docker-compose build
+```
+
+```shell
+docker-compose up
 ```
