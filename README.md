@@ -58,6 +58,7 @@ make tests
 
 ## Files
 
+- _docs/*_ - swagger files(OpenAPI)
 - _configs/conf.toml_ - settings
 - _scripts/create_tables.sql_ - postgres tables 
 - _logs/app.log_ - api errors 
