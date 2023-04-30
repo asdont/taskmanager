@@ -15,6 +15,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
+	"taskmanager/internal/app"
 	"taskmanager/internal/config"
 	"taskmanager/internal/db"
 	"taskmanager/internal/model"
@@ -85,7 +86,7 @@ func TestSimplePositiveScenario(t *testing.T) {
 func prepareRouter(t *testing.T) (*gin.Engine, *config.Conf, *sql.DB) {
 	var logger *logrus.Logger
 
-	conf, err := config.Get("../../../configs/conf.toml")
+	conf, err := config.GetFromFile("../../../configs/conf.toml")
 	require.NoError(t, err)
 
 	postgresPool, err := db.Conf{ConnAddress: conf.Postgres.ConnAddress}.CreatePool(logger)
@@ -106,7 +107,11 @@ func prepareRouter(t *testing.T) (*gin.Engine, *config.Conf, *sql.DB) {
 
 	router := gin.New()
 
-	serverConf.setRouters(context.Background(), postgres, router)
+	metrics := app.Metrics{
+		MetricsRoute: "/metrics",
+	}
+
+	serverConf.setRouters(context.Background(), postgres, router, metrics)
 
 	return router, conf, postgresPool
 }

@@ -10,10 +10,12 @@ import (
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/sirupsen/logrus"
 	swagFiles "github.com/swaggo/files"
 	swag "github.com/swaggo/gin-swagger"
 
+	"taskmanager/internal/app"
 	"taskmanager/internal/handler"
 	"taskmanager/internal/model"
 )
@@ -36,7 +38,9 @@ type CORS struct {
 	AllowOrigins []string
 }
 
-func (conf Conf) RunHTTPServer(ctx context.Context, postgres model.Postgres, logger *logrus.Logger) error {
+func (conf Conf) RunHTTPServer(
+	ctx context.Context, postgres model.Postgres, metrics app.Metrics, logger *logrus.Logger,
+) error {
 	gin.DisableConsoleColor()
 	gin.SetMode(conf.Mode)
 	gin.DefaultWriter = io.MultiWriter(os.Stdout)
@@ -51,11 +55,11 @@ func (conf Conf) RunHTTPServer(ctx context.Context, postgres model.Postgres, log
 	router.Use(
 		gin.Recovery(),
 		cors.New(confCors),
-		requestLogger(logger),
+		requestLogger(metrics, logger),
 		gin.LoggerWithFormatter(createLoggerFormatter()),
 	)
 
-	conf.setRouters(ctx, postgres, router)
+	conf.setRouters(ctx, postgres, router, metrics)
 
 	server := &http.Server{
 		Addr:           ":" + conf.Port,
@@ -84,8 +88,12 @@ func (conf Conf) RunHTTPServer(ctx context.Context, postgres model.Postgres, log
 	return nil
 }
 
-func (conf Conf) setRouters(ctx context.Context, postgres model.Postgres, router *gin.Engine) {
+func (conf Conf) setRouters(ctx context.Context, postgres model.Postgres, router *gin.Engine, metrics app.Metrics) {
+	// Swagger(OpenAPI).
 	router.GET("/doc/*any", swag.WrapHandler(swagFiles.Handler))
+
+	// Metrics(Prometheus).
+	router.GET(metrics.MetricsRoute, gin.WrapH(promhttp.Handler()))
 
 	api := router.Group("/api")
 	v1 := api.Group("/v1")

@@ -42,7 +42,7 @@ type logger struct {
 	MaxAgeDays int    `toml:"MaxAgeDays" validate:"gte=1,lte=720"`
 }
 
-func Get(fileName string) (*Conf, error) {
+func GetFromFile(fileName string) (*Conf, error) {
 	var conf *Conf
 	if _, err := toml.DecodeFile(fileName, &conf); err != nil {
 		return nil, fmt.Errorf("decode file: %w", err)

@@ -11,5 +11,5 @@ c.build:
 c.up:
 	docker-compose up
 
-test:
+tests:
 	go test -failfast ./...
