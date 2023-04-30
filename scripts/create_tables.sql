@@ -4,8 +4,7 @@ create table auth
         constraint auth__pk
             primary key,
     username text                                             not null,
-    password text                                             not null,
-    created  timestamp                                        not null
+    password text                                             not null
 );
 
 create unique index auth__username__uindex

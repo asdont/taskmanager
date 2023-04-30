@@ -25,7 +25,7 @@ func TestAuthorizationNegative(t *testing.T) {
 		expectedStatusCode int
 	}{
 		{
-			"create_user", http.MethodPost, "/api/v1/manage/user/", http.StatusTemporaryRedirect,
+			"create_user", http.MethodPost, "/api/v1/manage/user", http.StatusUnauthorized,
 		},
 		{
 			"delete_user", http.MethodDelete, "/api/v1/manage/user/1", http.StatusUnauthorized,

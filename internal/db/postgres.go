@@ -12,10 +12,10 @@ import (
 )
 
 // Environment variable for Dockerfile.
-const dockerEnvConnAddress = "DB_CONN"
+const dockerEnvConnAddress = "DB_ADDRESS"
 
 const (
-	maxConnectionAttempts = 5
+	maxConnectionAttempts = 10
 	delayBetweenAttempts  = 5
 )
 
@@ -35,13 +35,15 @@ func (conf Conf) CreatePool(logger *logrus.Logger) (*sql.DB, error) {
 	envDockerConnAddress, ok := os.LookupEnv(dockerEnvConnAddress)
 	if ok {
 		conf.ConnAddress = envDockerConnAddress
+
+		time.Sleep(time.Second * delayBetweenAttempts)
 	}
 
 	for i := 0; i <= maxConnectionAttempts; i++ {
 		pool, err := createPool(conf.ConnAddress)
 		if err != nil {
 			if errors.Is(err, errTempError) {
-				logger.Warnf("connection attempt %d: %v\n", i+1, err)
+				logger.Warnf("connection attempt %d: %v", i+1, err)
 
 				time.Sleep(time.Second * delayBetweenAttempts)
 

@@ -33,9 +33,9 @@ func (p Postgres) CreateNewUser(ctx context.Context, username string, password s
 	//nolint:execinquery
 	if err := p.Pool.QueryRowContext(ctx, `
 		INSERT INTO
-			auth(username, password, created)
+			auth(username, password)
 		VALUES
-		    ($1, $2, now())
+		    ($1, $2)
 		RETURNING
 		    user_id
 	`,

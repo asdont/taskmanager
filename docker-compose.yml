@@ -1,0 +1,43 @@
+version: '2'
+
+services:
+  api:
+    container_name: taskmanager_api
+    hostname: taskmanager
+    build: ./
+    command: ./taskmanager
+    networks:
+      taskmanager:
+        ipv4_address: 172.28.0.2
+    ports:
+      - "45222:45222"
+    environment:
+      - DB_ADDRESS=postgres://taskmanager:taskmanager@postgres:5432/taskmanager?sslmode=disable
+    restart: unless-stopped
+    depends_on:
+      - postgres
+
+  postgres:
+    container_name: taskmanager_postgres
+    hostname: postgres
+    image: postgres:alpine
+    networks:
+      taskmanager:
+        ipv4_address: 172.28.0.3
+    ports:
+      - "45223:5432"
+    environment:
+      - POSTGRES_DB=taskmanager
+      - POSTGRES_USER=taskmanager
+      - POSTGRES_PASSWORD=taskmanager
+    volumes:
+      - ./scripts/create_tables.sql:/docker-entrypoint-initdb.d/create_tables.sql
+    restart: unless-stopped
+
+networks:
+  taskmanager:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.28.0.0/24
+          gateway: 172.28.0.1

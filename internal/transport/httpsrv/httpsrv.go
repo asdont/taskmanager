@@ -114,7 +114,7 @@ func (conf Conf) setRouters(ctx context.Context, postgres model.Postgres, router
 func createLoggerFormatter() func(p gin.LogFormatterParams) string {
 	return func(p gin.LogFormatterParams) string {
 		return fmt.Sprintf("%s | %15s | %s | %12s | %d | %6s | %s | %s | %s\n",
-			p.TimeStamp.Format(time.DateTime),
+			p.TimeStamp.Format(time.RFC3339),
 			p.ClientIP,
 			p.Request.Proto,
 			p.Latency,

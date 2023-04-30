@@ -4,3 +4,12 @@ build:
 run:
 	swag init -g cmd/app/main.go
 	go run cmd/app/main.go
+
+c.build:
+	docker-compose build
+
+c.up:
+	docker-compose up
+
+test:
+	go test -failfast ./...

@@ -1,3 +1,27 @@
+## Run / Build
+
+---
+
+```shell
+make run
+```
+
+```shell
+make build
+```
+
+## Docker-compose
+
+---
+
+```shell
+make c.build
+```
+
+```shell
+make c.up
+```
+
 ## Docs
 
 ---
@@ -11,5 +35,5 @@ swag files dir - `docs/*`
 ---
 
 ```shell
-go test ./...
+go test -failfast ./...
 ```
