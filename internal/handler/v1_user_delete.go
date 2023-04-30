@@ -26,7 +26,7 @@ type deleteUserURI struct {
 // @Failure 401 {object} nil
 // @Failure 500 {object} HTTPError "error type, comment"
 // @Router /v1/manage/user/{userId} [delete]
-func V1DeleteUser(ctx context.Context, postgres model.Postgres) gin.HandlerFunc {
+func V1DeleteUser(ctx context.Context, postgres PostgresDB) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var u deleteUserURI
 		if err := c.ShouldBindUri(&u); err != nil {

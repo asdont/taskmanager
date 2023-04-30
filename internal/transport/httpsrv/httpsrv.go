@@ -88,7 +88,7 @@ func (conf Conf) RunHTTPServer(
 	return nil
 }
 
-func (conf Conf) setRouters(ctx context.Context, postgres model.Postgres, router *gin.Engine, metrics app.Metrics) {
+func (conf Conf) setRouters(ctx context.Context, postgres handler.PostgresDB, router *gin.Engine, metrics app.Metrics) {
 	// Swagger(OpenAPI).
 	router.GET("/doc/*any", swag.WrapHandler(swagFiles.Handler))
 
@@ -135,6 +135,7 @@ func createLoggerFormatter() func(p gin.LogFormatterParams) string {
 	}
 }
 
+//nolint:contextcheck
 func (conf Conf) waitingStopSignal(ctx context.Context, server *http.Server, chErr chan error) error {
 	select {
 	case err := <-chErr:

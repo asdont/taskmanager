@@ -1,16 +1,21 @@
 package httpsrv
 
 import (
+	"context"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 
+	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+
+	"taskmanager/internal/app"
+	"taskmanager/internal/model"
 )
 
 func TestAuthorizationNegative(t *testing.T) {
-	router, _, _ := prepareRouter(t)
+	router := testAuthorizationNegativePrepareRouter()
 
 	h := hData{
 		testUsername: "admin",
@@ -62,4 +67,19 @@ func TestAuthorizationNegative(t *testing.T) {
 			assert.Equal(t, tt.expectedStatusCode, w.Code)
 		})
 	}
+}
+
+func testAuthorizationNegativePrepareRouter() *gin.Engine {
+	gin.SetMode(gin.TestMode)
+
+	router := gin.New()
+
+	serverConf := Conf{
+		ManageUsername: "test",
+		ManagePassword: "test",
+	}
+
+	serverConf.setRouters(context.Background(), model.Postgres{}, router, app.Metrics{})
+
+	return router
 }

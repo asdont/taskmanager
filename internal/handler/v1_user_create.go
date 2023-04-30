@@ -43,7 +43,7 @@ type createUserResult struct {
 // @Failure 401 {object} nil
 // @Failure 500 {object} HTTPError "error type, comment"
 // @Router /v1/manage/user [post]
-func V1CreateUser(ctx context.Context, postgres model.Postgres) gin.HandlerFunc {
+func V1CreateUser(ctx context.Context, postgres PostgresDB) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var b createUserBody
 		if err := c.ShouldBindJSON(&b); err != nil {

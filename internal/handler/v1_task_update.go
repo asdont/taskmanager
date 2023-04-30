@@ -37,7 +37,7 @@ type updateTaskBody struct {
 // @Failure 401 {object} nil
 // @Failure 500 {object} HTTPError "error type, comment"
 // @Router /v1/task/{taskId} [put]
-func V1UpdateTask(ctx context.Context, postgres model.Postgres) gin.HandlerFunc {
+func V1UpdateTask(ctx context.Context, postgres PostgresDB) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		username, password, ok := c.Request.BasicAuth()
 		if !ok {
