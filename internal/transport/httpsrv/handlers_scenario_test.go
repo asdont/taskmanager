@@ -40,47 +40,49 @@ func TestSimplePositiveScenario(t *testing.T) {
 
 	defer clearTestData(t, postgres, h.testUsername, security.SaltPassword(h.testPassword))
 
+	// step 1
 	userID := h.createNewUser(t, conf.Server.ManageUsername, conf.Server.ManagePassword)
 
+	// step 2
 	taskTitle1 := "45983_1"
 	taskID1 := h.createTask(t, taskTitle1)
 
+	// step 3
 	h.getTask(t, taskID1, taskTitle1)
 
-	// step 1
+	// step 4
 	taskNewTitle := "45983_1_test"
 	h.updateTaskNewTitle(t, taskID1, taskNewTitle)
 
-	// step 2
+	// step 6
 	h.checkTaskNewTitle(t, taskID1, taskNewTitle)
 
-	// step 3
+	// step 6
 	h.updateTaskStatusCompleted(t, taskID1)
 
-	// step 4
+	// step 7
 	h.checkTaskStatusCompleted(t, taskID1)
 
-	// step 5
-	taskTitle2 := "45983_2"
-	taskID2 := h.createTask(t, taskTitle2)
+	// step 8
+	taskID2 := h.createTask(t, "45983_2")
 
-	// step 6
+	// step 9
 	taskTitle3 := "45983_3"
 	taskID3 := h.createTask(t, taskTitle3)
 
-	// step 7
+	// step 10
 	h.deleteTask(t, taskID2)
 
-	// step 8
+	// step 11
 	h.checkTasks(t, taskID1, taskID3, taskNewTitle, taskTitle3)
 
-	// step 9
+	// step 12
 	h.deleteTasks(t)
 
-	// step 10
+	// step 13
 	h.checkNoTasks(t)
 
-	// step 11
+	// step 14
 	h.deleteUser(t, conf.Server.ManageUsername, conf.Server.ManagePassword, userID)
 }
 
@@ -134,8 +136,9 @@ func (h hData) createNewUser(t *testing.T, manageUsername, managePassword string
 	w := httptest.NewRecorder()
 
 	req, err := http.NewRequest(http.MethodPost, "/api/v1/manage/user", bytes.NewReader(body))
-	req.SetBasicAuth(manageUsername, managePassword)
 	require.NoError(t, err)
+
+	req.SetBasicAuth(manageUsername, managePassword)
 
 	h.router.ServeHTTP(w, req)
 
@@ -163,8 +166,9 @@ func (h hData) createTask(t *testing.T, taskName string) int {
 	w := httptest.NewRecorder()
 
 	req, err := http.NewRequest(http.MethodPost, "/api/v1/task/", bytes.NewReader(body))
-	req.SetBasicAuth(h.testUsername, h.testPassword)
 	require.NoError(t, err)
+
+	req.SetBasicAuth(h.testUsername, h.testPassword)
 
 	h.router.ServeHTTP(w, req)
 
@@ -184,8 +188,9 @@ func (h hData) getTask(t *testing.T, taskID int, taskName string) {
 	w := httptest.NewRecorder()
 
 	req, err := http.NewRequest(http.MethodGet, "/api/v1/task/"+strconv.Itoa(taskID), nil)
-	req.SetBasicAuth(h.testUsername, h.testPassword)
 	require.NoError(t, err)
+
+	req.SetBasicAuth(h.testUsername, h.testPassword)
 
 	h.router.ServeHTTP(w, req)
 
@@ -216,8 +221,9 @@ func (h hData) updateTaskNewTitle(t *testing.T, taskID int, taskNewTitle string)
 	w := httptest.NewRecorder()
 
 	req, err := http.NewRequest(http.MethodPut, "/api/v1/task/"+strconv.Itoa(taskID), bytes.NewReader(body))
-	req.SetBasicAuth(h.testUsername, h.testPassword)
 	require.NoError(t, err)
+
+	req.SetBasicAuth(h.testUsername, h.testPassword)
 
 	h.router.ServeHTTP(w, req)
 
@@ -230,8 +236,9 @@ func (h hData) checkTaskNewTitle(t *testing.T, taskID int, taskNameNew string) {
 	w := httptest.NewRecorder()
 
 	req, err := http.NewRequest(http.MethodGet, "/api/v1/task/"+strconv.Itoa(taskID), nil)
-	req.SetBasicAuth(h.testUsername, h.testPassword)
 	require.NoError(t, err)
+
+	req.SetBasicAuth(h.testUsername, h.testPassword)
 
 	h.router.ServeHTTP(w, req)
 
@@ -262,8 +269,9 @@ func (h hData) updateTaskStatusCompleted(t *testing.T, taskID int) {
 	w := httptest.NewRecorder()
 
 	req, err := http.NewRequest(http.MethodPut, "/api/v1/task/"+strconv.Itoa(taskID), bytes.NewReader(body))
-	req.SetBasicAuth(h.testUsername, h.testPassword)
 	require.NoError(t, err)
+
+	req.SetBasicAuth(h.testUsername, h.testPassword)
 
 	h.router.ServeHTTP(w, req)
 
@@ -276,8 +284,9 @@ func (h hData) checkTaskStatusCompleted(t *testing.T, taskID int) {
 	w := httptest.NewRecorder()
 
 	req, err := http.NewRequest(http.MethodGet, "/api/v1/task/"+strconv.Itoa(taskID), nil)
-	req.SetBasicAuth(h.testUsername, h.testPassword)
 	require.NoError(t, err)
+
+	req.SetBasicAuth(h.testUsername, h.testPassword)
 
 	h.router.ServeHTTP(w, req)
 
@@ -298,8 +307,9 @@ func (h hData) deleteTask(t *testing.T, taskID int) {
 	w := httptest.NewRecorder()
 
 	req, err := http.NewRequest(http.MethodDelete, "/api/v1/task/"+strconv.Itoa(taskID), nil)
-	req.SetBasicAuth(h.testUsername, h.testPassword)
 	require.NoError(t, err)
+
+	req.SetBasicAuth(h.testUsername, h.testPassword)
 
 	h.router.ServeHTTP(w, req)
 
@@ -312,8 +322,9 @@ func (h hData) checkTasks(t *testing.T, taskID1, taskID3 int, taskTitle1, taskTi
 	w := httptest.NewRecorder()
 
 	req, err := http.NewRequest(http.MethodGet, "/api/v1/tasks/", nil)
-	req.SetBasicAuth(h.testUsername, h.testPassword)
 	require.NoError(t, err)
+
+	req.SetBasicAuth(h.testUsername, h.testPassword)
 
 	h.router.ServeHTTP(w, req)
 
@@ -337,8 +348,9 @@ func (h hData) deleteTasks(t *testing.T) {
 	w := httptest.NewRecorder()
 
 	req, err := http.NewRequest(http.MethodDelete, "/api/v1/tasks/", nil)
-	req.SetBasicAuth(h.testUsername, h.testPassword)
 	require.NoError(t, err)
+
+	req.SetBasicAuth(h.testUsername, h.testPassword)
 
 	h.router.ServeHTTP(w, req)
 
@@ -358,8 +370,9 @@ func (h hData) checkNoTasks(t *testing.T) {
 	w := httptest.NewRecorder()
 
 	req, err := http.NewRequest(http.MethodGet, "/api/v1/tasks/", nil)
-	req.SetBasicAuth(h.testUsername, h.testPassword)
 	require.NoError(t, err)
+
+	req.SetBasicAuth(h.testUsername, h.testPassword)
 
 	h.router.ServeHTTP(w, req)
 
@@ -377,8 +390,9 @@ func (h hData) deleteUser(t *testing.T, manageUsername, managePassword string, u
 	w := httptest.NewRecorder()
 
 	req, err := http.NewRequest(http.MethodDelete, "/api/v1/manage/user/"+strconv.Itoa(userId), nil)
-	req.SetBasicAuth(manageUsername, managePassword)
 	require.NoError(t, err)
+
+	req.SetBasicAuth(manageUsername, managePassword)
 
 	h.router.ServeHTTP(w, req)
 

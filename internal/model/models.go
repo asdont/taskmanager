@@ -1,7 +1,10 @@
 package model
 
 import (
+	"database/sql"
 	"errors"
+
+	"github.com/sirupsen/logrus"
 )
 
 var (
@@ -11,3 +14,9 @@ var (
 	ErrTaskAlreadyExists = errors.New("task already exists")
 	ErrTaskNotFound      = errors.New("task not found")
 )
+
+type Postgres struct {
+	Pool         *sql.DB
+	Logger       *logrus.Logger
+	QueryTimeout int
+}

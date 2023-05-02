@@ -2,20 +2,11 @@ package model
 
 import (
 	"context"
-	"database/sql"
 	"fmt"
 	"time"
 
-	"github.com/sirupsen/logrus"
-
 	"taskmanager/internal/db"
 )
-
-type Postgres struct {
-	Pool         *sql.DB
-	Logger       *logrus.Logger
-	QueryTimeout int
-}
 
 type User struct {
 	ID       int       `json:"id"`

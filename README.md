@@ -56,6 +56,10 @@ make tests
       - 127.0.0.1:45222
 ```
 
+**api_tm_request_http_requests_total** - total number of requests, their methods and paths.
+
+![Total requests](docs/grafana-example.png)
+
 ## Files
 
 - _docs/*_ - swagger files(OpenAPI)

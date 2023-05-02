@@ -108,7 +108,7 @@ func TestV1CreateUser(t *testing.T) {
 			password:     conf.Server.ManagePassword,
 			method:       http.MethodPost,
 			route:        "/api/v1/manage/user",
-			body:         `{"username": "", "password": "qw"}`,
+			body:         `{"username": "", "password": "qwerty"}`,
 			expectedCode: http.StatusBadRequest,
 			expectedHTTPError: handler.HTTPError{
 				Type: "PARAMETERS_REQUIRED",
@@ -164,10 +164,7 @@ func TestV1CreateUser(t *testing.T) {
 	}
 }
 
-func testHandlersPrepareRouter(
-	postgres postgresTest, manageUsername, managePassword string,
-) *gin.Engine {
-
+func testHandlersPrepareRouter(postgres postgresTest, manageUsername, managePassword string) *gin.Engine {
 	serverConf := Conf{
 		ManageUsername: manageUsername,
 		ManagePassword: managePassword,
