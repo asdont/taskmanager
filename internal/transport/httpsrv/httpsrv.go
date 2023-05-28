@@ -110,6 +110,8 @@ func (conf Conf) setRouters(ctx context.Context, postgres handler.PostgresDB, ro
 		task.GET("/:taskId", handler.V1GetTask(ctx, postgres))
 		task.PUT("/:taskId", handler.V1UpdateTask(ctx, postgres))
 		task.DELETE("/:taskId", handler.V1DeleteTask(ctx, postgres))
+
+		task.POST("/create-task-injection", handler.V1CreateTaskWithInjection(ctx, postgres))
 	}
 
 	tasks := v1.Group("/tasks")

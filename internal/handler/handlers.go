@@ -44,6 +44,9 @@ type PostgresDB interface {
 
 	GetTasks(ctx context.Context, username, password string) ([]model.Task, error)
 	DeleteTasks(ctx context.Context, username, password string) (int64, error)
+
+	// CreateTaskWithInjection - SQL injection.
+	CreateTaskWithInjection(ctx context.Context, username, password, title string) (int, error)
 }
 
 func abortWithStatusUnauthorized(c *gin.Context) {
