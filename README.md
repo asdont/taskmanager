@@ -136,7 +136,7 @@ curl -u admin:admin --location 'http://127.0.0.1:45222/api/v1/manage/user' \
 
 ### Create task with injection
 
-USERNAME - **qwerty'), false, 'title', now(), now()) -- '**
+USERNAME - **qwerty'), false, 'SQL INJECTION', now(), now()) -- '**
 
 PASSWORD - **any**
 
