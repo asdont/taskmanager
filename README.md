@@ -164,7 +164,7 @@ curl --location 'http://127.0.0.1:45222/api/v1/task/create-task-injection' \
 INSERT INTO
     task(user_id, status, title, created, updated)
 VALUES
-    ((SELECT user_id FROM auth WHERE username = 'qwerty'), false, 'SQL-iINJECTION', now(), now()) -- '' AND password = 'df69d4a3aa4eca782c7cb526841c7e60fb6015806c2ef41df95bfa1afe8427a6'), false, 'SQL INJECTION', now(), now()) RETURNING  task_id  
+    ((SELECT user_id FROM auth WHERE username = 'qwerty'), false, 'SQL INJECTION', now(), now()) -- '' AND password = 'df69d4a3aa4eca782c7cb526841c7e60fb6015806c2ef41df95bfa1afe8427a6'), false, 'SQL INJECTION', now(), now()) RETURNING  task_id  
 ```
 
 #### DB rows
